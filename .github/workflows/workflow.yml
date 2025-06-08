@@ -45,7 +45,7 @@ jobs:
 
     # Scan Docker image (Trivy)
     - name: Scan Docker image for vulnerabilities
-      uses: aquasecurity/trivy-action@v0.13.1
+      uses: aquasecurity/trivy-action@0.28.0
       with:
         image-ref: agenticobservability.azurecr.io/img-use-case-test-agentic-observability:${{ github.sha }}
         format: 'table'
