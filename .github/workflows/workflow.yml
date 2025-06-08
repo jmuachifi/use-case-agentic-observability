@@ -48,7 +48,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
-          path: /tmp  # (Optional: placeholder, Docker images are not easily uploaded, but this keeps the step structure)
+          path: ./docker-artifacts  # Use a directory you control and create if needed
+          if-no-files-found: warn
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false
 
   scan:
     runs-on: ubuntu-latest
