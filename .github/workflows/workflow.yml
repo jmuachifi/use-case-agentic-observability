@@ -1,0 +1,65 @@
+on: [push]
+
+name: Linux_Container_Node_Workflow
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@v4
+
+    # Static code analysis (ESLint)
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run ESLint
+      run: |
+        npx eslint . || exit 1
+
+    # (Optional) CodeQL static analysis
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+    # Docker login
+    - uses: azure/docker-login@v1
+      with:
+        login-server: agenticobservability.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    # Build Docker image
+    - name: Build Docker image
+      run: |
+        docker build . -t agenticobservability.azurecr.io/img-use-case-test-agentic-observability:${{ github.sha }}
+
+    # Scan Docker image (Trivy)
+    - name: Scan Docker image for vulnerabilities
+      uses: aquasecurity/trivy-action@v0.13.1
+      with:
+        image-ref: agenticobservability.azurecr.io/img-use-case-test-agentic-observability:${{ github.sha }}
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+
+    # Push Docker image
+    - name: Push Docker image
+      run: |
+        docker push agenticobservability.azurecr.io/img-use-case-test-agentic-observability:${{ github.sha }}
+
+    # Deploy to Azure Web App
+    - uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'node-rnc'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: 'agenticobservability.azurecr.io/img-use-case-test-agentic-observability:${{ github.sha }}'
