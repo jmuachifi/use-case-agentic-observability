@@ -16,6 +16,14 @@ app.get('/health', (req, res) => {
   res.json({ status: "OK", uptime: process.uptime() });
 });
 
+app.get('/stress', (req, res) => {
+  const end = Date.now() + 10000; // Run for 10 seconds
+  while (Date.now() < end) {
+    Math.sqrt(Math.random()) * Math.random(); // Arbitrary CPU work
+  }
+  res.send('Stress test completed after 10 seconds of CPU load.');
+});
+
 app.listen(port, () => {
   console.log(`Contoso Client Site running on port ${port}`);
 });
