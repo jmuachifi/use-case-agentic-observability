@@ -4,7 +4,8 @@ export default [
   {
     ...js.configs.recommended,
     languageOptions: {
-      env: { node: true, es2022: true },
+      ecmaVersion: 2022,
+      sourceType: "module",
     },
   },
 ];
