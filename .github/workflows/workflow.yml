@@ -63,6 +63,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'node-rnc'
+          app-name: 'use-case-test-agentic-observability'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: 'agenticobservability.azurecr.io/img-use-case-test-agentic-observability:${{ github.sha }}'
