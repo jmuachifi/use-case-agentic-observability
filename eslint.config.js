@@ -1,9 +1,10 @@
 import js from "@eslint/js";
 
 export default [
-  js.configs.recommended,
   {
-    files: ["**/*.js"],
-    rules: {},
+    ...js.configs.recommended,
+    languageOptions: {
+      env: { node: true, es2022: true },
+    },
   },
 ];
